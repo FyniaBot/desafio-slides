@@ -313,35 +313,48 @@ html,body{width:100%;height:100dvh;font-family:'Inter',sans-serif;background:var
   </div>
 </div>
 
-<!-- S14 — EMPILHAMENTO DE VALOR -->
-<div class="slide">
-  <span class="tag tag-purple">Tudo que você está levando</span>
-  <h2 class="title sm">O que está incluído.</h2>
-  <ul class="incluso-list">
-    <li><span class="ic-green">✅</span><span>4 meses de programa com acompanhamento</span></li>
-    <li><span class="ic-green">✅</span><span>Vídeo-análise individual (Anibal / Pietro)</span></li>
-    <li><span class="ic-green">✅</span><span>Calls semanais com especialistas</span></li>
-    <li><span class="ic-green">✅</span><span>Infynia Basic grátis — R$476</span></li>
-    <li><span class="ic-green">✅</span><span>Trilha M7D com aplicação guiada</span></li>
-    <li><span class="ic-green">✅</span><span>Grupo 30 donos de e-commerce</span></li>
-    <li><span class="ic-green">✅</span><span>Competição com prêmio OP8D (R$23.000)</span></li>
-    <li><span class="ic-green">✅</span><span>Bônus NuvemShop (reembolso do Desafio)</span></li>
-  </ul>
-  <div style="margin-top:24px;font-size:clamp(16px,2vw,20px);color:var(--txt2)">Valor total:</div>
-  <div class="stack-total">R$33.000+</div>
+<!-- S14 — EMPILHAMENTO DE VALOR (lista + total lado a lado) -->
+<div class="slide" style="flex-direction:row;gap:40px;align-items:center;padding:32px 40px">
+  <!-- Esquerda: lista -->
+  <div style="flex:1;min-width:0">
+    <span class="tag tag-purple" style="margin-bottom:16px">Tudo que você está levando</span>
+    <ul class="incluso-list" style="margin-top:12px">
+      <li><span class="ic-green">✅</span><span>4 meses de programa com acompanhamento</span></li>
+      <li><span class="ic-green">✅</span><span>Vídeo-análise individual (Anibal / Pietro)</span></li>
+      <li><span class="ic-green">✅</span><span>Calls semanais com especialistas</span></li>
+      <li><span class="ic-green">✅</span><span>Infynia Basic grátis — R$476</span></li>
+      <li><span class="ic-green">✅</span><span>Trilha M7D com aplicação guiada</span></li>
+      <li><span class="ic-green">✅</span><span>Grupo 30 donos de e-commerce</span></li>
+      <li><span class="ic-green">✅</span><span>Competição com prêmio OP8D (R$23.000)</span></li>
+      <li><span class="ic-green">✅</span><span>Bônus NuvemShop (reembolso do Desafio)</span></li>
+    </ul>
+  </div>
+  <!-- Divisor -->
+  <div style="width:1px;background:var(--border);align-self:stretch;flex-shrink:0"></div>
+  <!-- Direita: total -->
+  <div style="flex:0 0 auto;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
+    <div style="font-size:clamp(13px,1.5vw,16px);color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;font-weight:600">Valor total</div>
+    <div class="stack-total" style="margin-top:0">R$33.000+</div>
+    <div style="font-size:clamp(12px,1.3vw,15px);color:var(--txt2);margin-top:8px">em valor entregue</div>
+  </div>
 </div>
 
-<!-- S15 — OFERTA (R$4.997 pequeno, 12x grande) -->
+<!-- S15 — OFERTA -->
 <div class="slide">
   <span class="tag tag-gold">Só durante essa call</span>
   <h2 class="title sm">A oferta especial pra você.</h2>
-  <div style="margin-top:24px">
+  <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:4px">
+    <!-- Âncora de valor -->
+    <div style="font-size:clamp(13px,1.5vw,16px);color:var(--txt2);margin-bottom:4px">Tudo isso vale R$33.000+</div>
+    <!-- Riscado -->
     <div class="preco-riscado">R$9.997 (valor cobrado nesse tipo de mentoria)</div>
-    <div style="width:80px;height:1px;background:var(--border);margin:14px auto"></div>
-    <div style="font-size:clamp(14px,1.8vw,18px);color:var(--txt2);margin-bottom:6px">Desafio 100K:</div>
-    <div style="font-size:clamp(22px,3vw,36px);font-weight:700;color:#fff;line-height:1.1">R$4.997</div>
-    <div style="font-size:clamp(48px,7vw,88px);font-weight:900;background:linear-gradient(135deg,var(--gold),#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-top:8px">12x de R$509</div>
-    <div style="font-size:clamp(13px,1.5vw,16px);color:var(--txt2);margin-top:8px">no cartão de crédito</div>
+    <div style="width:60px;height:1px;background:var(--border);margin:10px auto"></div>
+    <!-- Preço real pequeno -->
+    <div style="font-size:clamp(14px,1.8vw,18px);color:var(--txt2);margin-bottom:4px">Desafio 100K:</div>
+    <div style="font-size:clamp(20px,2.8vw,32px);font-weight:700;color:#fff;line-height:1.1">R$4.497</div>
+    <!-- Parcelamento grande -->
+    <div style="font-size:clamp(48px,7vw,88px);font-weight:900;background:linear-gradient(135deg,var(--gold),#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-top:6px">12x de R$509</div>
+    <div style="font-size:clamp(13px,1.5vw,16px);color:var(--txt2);margin-top:6px">no cartão de crédito</div>
   </div>
 </div>
 
