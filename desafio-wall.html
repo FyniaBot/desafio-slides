@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio Mastery — Wall of Champions</title>
+  <!-- Google Fonts: Inter + Space Grotesk -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       CUSTOMIZAÇÃO RÁPIDA — altere estas variáveis
+       ═══════════════════════════════════════════ */
+    :root {
+      --bg-primary: #0A0A0B;
+      --bg-card: #111113;
+      --bg-card-hover: #18181b;
+      --bg-surface: #1a1a1f;
+      --border: #27272a;
+      --border-highlight: #3b82f620;
+      --text-primary: #fafafa;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --accent-blue: #3b82f6;
+      --accent-blue-glow: #3b82f640;
+      --accent-gold: #f59e0b;
+      --accent-gold-glow: #f59e0b30;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-purple: #a855f7;
+      --gradient-hero: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #f59e0b 100%);
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-display: 'Space Grotesk', 'Inter', sans-serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 30% 20%, #3b82f608 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, #f59e0b05 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       LAYOUT
+       ═══════════════════════════════════════════ */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════ */
+    .header {
+      padding: 2rem 0 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .header__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--accent-blue-glow);
+      border: 1px solid #3b82f630;
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    .header__badge .pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .header__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      background: var(--gradient-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .header__subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 400;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ═══════════════════════════════════════════
+       COUNTDOWN / SPRINT TIMER
+       ═══════════════════════════════════════════ */
+    .countdown-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.5rem;
+      margin: 1.5rem auto;
+      max-width: 600px;
+      flex-wrap: wrap;
+    }
+
+    .countdown-bar__label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .countdown-bar__timer {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .countdown-bar__unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-surface);
+      border-radius: var(--radius-sm);
+      padding: 0.4rem 0.6rem;
+      min-width: 48px;
+    }
+
+    .countdown-bar__unit .num {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .countdown-bar__unit .lbl {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .countdown-bar__sep {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════════
+       STATS CARDS
+       ═══════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .stat-card:hover {
+      border-color: #3b82f630;
+      transform: translateY(-2px);
+    }
+
+    .stat-card__icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card__value {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .stat-card__label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ═══════════════════════════════════════════
+       FAIXA SECTION (Decolagem / Aceleração)
+       ═══════════════════════════════════════════ */
+    .faixa-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .faixa-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faixa-header__icon {
+      font-size: 1.5rem;
+    }
+
+    .faixa-header__title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .faixa-header__count {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      padding: 0.25rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* ═══════════════════════════════════════════
+       RANKING TABLE
+       ═══════════════════════════════════════════ */
+    .ranking-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 0.5rem;
+    }
+
+    .ranking-table thead th {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0 1rem 0.5rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .ranking-table thead th:first-child {
+      text-align: center;
+      width: 60px;
+    }
+
+    .ranking-table thead th:nth-child(4),
+    .ranking-table thead th:nth-child(5) {
+      text-align: center;
+    }
+
+    .ranking-table thead th:last-child {
+      text-align: right;
+    }
+
+    .ranking-row {
+      background: var(--bg-card);
+      transition: background var(--transition), transform var(--transition);
+      cursor: default;
+    }
+
+    .ranking-row:hover {
+      background: var(--bg-card-hover);
+      transform: scale(1.005);
+    }
+
+    .ranking-row td {
+      padding: 0.85rem 1rem;
+      vertical-align: middle;
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+    }
+
+    .ranking-row td:first-child {
+      border-left: 1px solid transparent;
+      border-radius: var(--radius) 0 0 var(--radius);
+      text-align: center;
+    }
+
+    .ranking-row td:last-child {
+      border-right: 1px solid transparent;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      text-align: right;
+    }
+
+    /* Top 3 highlight */
+    .ranking-row--gold {
+      background: linear-gradient(135deg, #f59e0b10 0%, var(--bg-card) 100%);
+      border: 1px solid #f59e0b20;
+    }
+    .ranking-row--gold td:first-child { border-left-color: #f59e0b40; }
+
+    .ranking-row--silver {
+      background: linear-gradient(135deg, #94a3b810 0%, var(--bg-card) 100%);
+      border: 1px solid #94a3b815;
+    }
+
+    .ranking-row--bronze {
+      background: linear-gradient(135deg, #cd7f3210 0%, var(--bg-card) 100%);
+      border: 1px solid #cd7f3215;
+    }
+
+    /* Position badge */
+    .pos-badge {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .pos-badge--1 { color: var(--accent-gold); }
+    .pos-badge--2 { color: #c0c0c0; }
+    .pos-badge--3 { color: #cd7f32; }
+    .pos-badge--default { color: var(--text-muted); font-size: 0.9rem; }
+
+    /* Name column */
+    .name-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .name-cell__avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .name-cell__info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .name-cell__name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .name-cell__badges {
+      display: flex;
+      gap: 0.35rem;
+      margin-top: 0.15rem;
+    }
+
+    .badge {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge--margin {
+      background: #22c55e20;
+      color: var(--accent-green);
+      border: 1px solid #22c55e30;
+    }
+
+    .badge--decolagem {
+      background: #3b82f615;
+      color: var(--accent-blue);
+      border: 1px solid #3b82f625;
+    }
+
+    .badge--aceleracao {
+      background: #a855f715;
+      color: var(--accent-purple);
+      border: 1px solid #a855f725;
+    }
+
+    /* Faturamento */
+    .fat-value {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+    }
+
+    /* Crescimento */
+    .growth-cell {
+      text-align: center;
+    }
+
+    .growth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .growth-pill--positive {
+      background: #22c55e15;
+      color: var(--accent-green);
+    }
+
+    .growth-pill--negative {
+      background: #ef444415;
+      color: var(--accent-red);
+    }
+
+    .growth-pill--neutral {
+      background: #71717a15;
+      color: var(--text-muted);
+    }
+
+    /* Meta progress bar */
+    .meta-cell {
+      min-width: 120px;
+    }
+
+    .meta-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-surface);
+      border-radius: 100px;
+      overflow: hidden;
+      margin-bottom: 0.2rem;
+    }
+
+    .meta-bar__fill {
+      height: 100%;
+      border-radius: 100px;
+      background: var(--gradient-hero);
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .meta-bar__label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* Status */
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-dot--active::before { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+    .status-dot--active { color: var(--accent-green); }
+
+    .status-dot--risk::before { background: var(--accent-gold); }
+    .status-dot--risk { color: var(--accent-gold); }
+
+    .status-dot--inactive::before { background: var(--text-muted); }
+    .status-dot--inactive { color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+       ═══════════════════════════════════════════ */
+    .footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+      margin-top: 1rem;
+    }
+
+    .footer__refresh {
+      color: var(--accent-blue);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════════════════
+       LOADING STATE
+       ═══════════════════════════════════════════ */
+    .loading-overlay {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 1rem;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       EMPTY STATE
+       ═══════════════════════════════════════════ */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state__icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .container { padding: 0 0.75rem; }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+
+      .ranking-table {
+        display: block;
+      }
+
+      .ranking-table thead { display: none; }
+
+      .ranking-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .ranking-row {
+        display: grid;
+        grid-template-columns: 50px 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 0 0.5rem;
+        padding: 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+
+      .ranking-row td {
+        padding: 0.25rem 0;
+        border: none !important;
+        border-radius: 0 !important;
+      }
+
+      /* Position: row 1-3, col 1 */
+      .ranking-row td:nth-child(1) {
+        grid-row: 1 / 4;
+        grid-column: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Name: row 1, col 2 */
+      .ranking-row td:nth-child(2) {
+        grid-row: 1;
+        grid-column: 2;
+      }
+
+      /* Faturamento: row 2, col 2 */
+      .ranking-row td:nth-child(3) {
+        grid-row: 2;
+        grid-column: 2;
+      }
+
+      .ranking-row td:nth-child(3)::before {
+        content: 'Faturamento: ';
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      /* Growth: row 3, col 2 */
+      .ranking-row td:nth-child(4) {
+        grid-row: 3;
+        grid-column: 2;
+        text-align: left !important;
+      }
+
+      /* Hide Meta + Status on mobile to save space */
+      .ranking-row td:nth-child(5),
+      .ranking-row td:nth-child(6) {
+        display: none;
+      }
+
+      .countdown-bar {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .stat-card { padding: 1rem 0.75rem; }
+      .stat-card__value { font-size: 1.4rem; }
+    }
+
+    /* ═══════════════════════════════════════════
+       ANIMATIONS
+       ═══════════════════════════════════════════ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .animate-in:nth-child(1) { animation-delay: 0.05s; }
+    .animate-in:nth-child(2) { animation-delay: 0.1s; }
+    .animate-in:nth-child(3) { animation-delay: 0.15s; }
+    .animate-in:nth-child(4) { animation-delay: 0.2s; }
+    .animate-in:nth-child(5) { animation-delay: 0.25s; }
+    .animate-in:nth-child(6) { animation-delay: 0.3s; }
+    .animate-in:nth-child(7) { animation-delay: 0.35s; }
+    .animate-in:nth-child(8) { animation-delay: 0.4s; }
+    .animate-in:nth-child(9) { animation-delay: 0.45s; }
+    .animate-in:nth-child(10) { animation-delay: 0.5s; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ═══ HEADER ═══ -->
+    <header class="header">
+      <div class="header__badge">
+        <span class="pulse"></span>
+        Ao vivo — Atualização automática
+      </div>
+      <h1 class="header__title">🏆 Desafio Mastery</h1>
+      <p class="header__subtitle">Ranking em tempo real dos participantes. Quem vai dominar o sprint?</p>
+    </header>
+
+    <!-- ═══ COUNTDOWN TIMER ═══ -->
+    <!-- CUSTOMIZAR: Altere SPRINT_END_DATE no JS para definir o fim do sprint -->
+    <div class="countdown-bar">
+      <span class="countdown-bar__label">⏱ Sprint encerra em</span>
+      <div class="countdown-bar__timer" id="countdown">
+        <div class="countdown-bar__unit"><span class="num" id="cd-days">--</span><span class="lbl">Dias</span></div>
+        <span class="countdown-bar__sep">:</span>
+        <div class="countdown-bar__unit"><span class="num" id="cd-hours">--</span><span class="lbl">Horas</span></div>
+        <span class="countdown-bar__sep">:</span>
+        <div class="countdown-bar__unit"><span class="num" id="cd-mins">--</span><span class="lbl">Min</span></div>
+        <span class="countdown-bar__sep">:</span>
+        <div class="countdown-bar__unit"><span class="num" id="cd-secs">--</span><span class="lbl">Seg</span></div>
+      </div>
+    </div>
+
+    <!-- ═══ STATS GERAIS ═══ -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat-card animate-in">
+        <div class="stat-card__icon">👥</div>
+        <div class="stat-card__value" id="stat-total">--</div>
+        <div class="stat-card__label">Participantes</div>
+      </div>
+      <div class="stat-card animate-in">
+        <div class="stat-card__icon">💰</div>
+        <div class="stat-card__value" id="stat-fat">--</div>
+        <div class="stat-card__label">Faturamento Total</div>
+      </div>
+      <div class="stat-card animate-in">
+        <div class="stat-card__icon">📈</div>
+        <div class="stat-card__value" id="stat-growth">--</div>
+        <div class="stat-card__label">Crescimento Médio</div>
+      </div>
+      <div class="stat-card animate-in">
+        <div class="stat-card__icon">🔥</div>
+        <div class="stat-card__value" id="stat-margin">--</div>
+        <div class="stat-card__label">Margem 15%+</div>
+      </div>
+    </div>
+
+    <!-- ═══ FAIXA: ACELERAÇÃO ═══ -->
+    <section class="faixa-section" id="section-aceleracao">
+      <div class="faixa-header">
+        <span class="faixa-header__icon">🚀</span>
+        <h2 class="faixa-header__title" style="color: var(--accent-purple);">Aceleração</h2>
+        <span class="faixa-header__count" id="count-aceleracao">40k–80k/mês</span>
+      </div>
+      <div id="table-aceleracao">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span class="loading-text">Carregando ranking...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FAIXA: DECOLAGEM ═══ -->
+    <section class="faixa-section" id="section-decolagem">
+      <div class="faixa-header">
+        <span class="faixa-header__icon">✈️</span>
+        <h2 class="faixa-header__title" style="color: var(--accent-blue);">Decolagem</h2>
+        <span class="faixa-header__count" id="count-decolagem">0–40k/mês</span>
+      </div>
+      <div id="table-decolagem">
+        <div class="loading-overlay">
+          <div class="spinner"></div>
+          <span class="loading-text">Carregando ranking...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="footer">
+      <p>Desafio Mastery Wall &bull; Atualizado a cada <span class="footer__refresh">30 segundos</span></p>
+      <p style="margin-top:0.35rem;">Última atualização: <span id="last-update">--</span></p>
+    </footer>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       JAVASCRIPT
+       ═══════════════════════════════════════════ -->
+  <script>
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  CONFIGURAÇÃO — Altere aqui para customizar ║
+     * ╚════════════════════════════════════════════╝
+     */
+
+    // API Base44
+    const API_URL = 'https://base44.app/api/apps/69bbe74d76b5e7b5dd3f1ba2/entities/Lead';
+    const API_TOKEN = '9b3a530aca184df78210b63e82afc5de';
+
+    // Intervalo de atualização automática (em ms)
+    const REFRESH_INTERVAL = 30000; // 30 segundos
+
+    // Data de fim do sprint atual (CUSTOMIZAR)
+    // Formato: new Date('YYYY-MM-DDTHH:mm:ss-03:00') para horário de Brasília
+    const SPRINT_END_DATE = new Date('2026-04-15T23:59:59-03:00');
+
+    // Faixas de faturamento (valores em reais)
+    const FAIXAS = {
+      decolagem: { min: 0, max: 40000, label: 'Decolagem', color: '#3b82f6' },
+      aceleracao: { min: 40000, max: 80000, label: 'Aceleração', color: '#a855f7' },
+    };
+
+    // Meta de faturamento (barra de progresso)
+    const META_ACELERACAO = 100000; // R$100k
+
+    // Cores de avatar (geradas por hash do nome)
+    const AVATAR_COLORS = [
+      '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#22c55e',
+      '#06b6d4', '#f43f5e', '#6366f1', '#14b8a6', '#e11d48',
+    ];
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  DADOS MOCKADOS (preview quando API vazia) ║
+     * ╚════════════════════════════════════════════╝
+     *
+     * Esses dados são usados APENAS se a API não retornar
+     * nenhum lead com product = "Desafio".
+     * Para desativar o mock, defina USE_MOCK = false.
+     */
+    const USE_MOCK = true;
+
+    const MOCK_DATA = [
+      // Aceleração (40k-80k)
+      { name: 'Carlos Mendes', product: 'Desafio', stage: 'Desafio - Aceleração', estimated_value: 72000, notes: 'crescimento:28|margem:18|faturamento_base:55000', origin: 'Indicação' },
+      { name: 'Ana Beatriz', product: 'Desafio', stage: 'Desafio - Aceleração', estimated_value: 68500, notes: 'crescimento:22|margem:16|faturamento_base:48000', origin: 'Instagram' },
+      { name: 'Roberto Lima', product: 'Desafio', stage: 'Desafio - Aceleração', estimated_value: 61000, notes: 'crescimento:15|margem:12|faturamento_base:52000', origin: 'Evento' },
+      { name: 'Juliana Costa', product: 'Desafio', stage: 'Desafio - Aceleração', estimated_value: 55000, notes: 'crescimento:10|margem:14|faturamento_base:45000', origin: 'Orgânico' },
+      { name: 'Marcos Oliveira', product: 'Desafio', stage: 'Desafio - Aceleração', estimated_value: 49000, notes: 'crescimento:8|margem:9|faturamento_base:42000', origin: 'Indicação' },
+      // Decolagem (0-40k)
+      { name: 'Fernanda Alves', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 38000, notes: 'crescimento:45|margem:20|faturamento_base:22000', origin: 'Instagram' },
+      { name: 'Lucas Santana', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 35000, notes: 'crescimento:38|margem:17|faturamento_base:18000', origin: 'Indicação' },
+      { name: 'Bianca Torres', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 31500, notes: 'crescimento:32|margem:15|faturamento_base:20000', origin: 'Evento' },
+      { name: 'Pedro Henrique', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 27000, notes: 'crescimento:25|margem:11|faturamento_base:15000', origin: 'Orgânico' },
+      { name: 'Camila Rocha', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 24000, notes: 'crescimento:20|margem:13|faturamento_base:12000', origin: 'Instagram' },
+      { name: 'Thiago Martins', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 19500, notes: 'crescimento:18|margem:8|faturamento_base:10000', origin: 'Indicação' },
+      { name: 'Larissa Dias', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 15000, notes: 'crescimento:12|margem:6|faturamento_base:8000', origin: 'Orgânico' },
+      { name: 'Rafael Souza', product: 'Desafio', stage: 'Desafio - Decolagem', estimated_value: 11000, notes: 'crescimento:-5|margem:3|faturamento_base:5000', origin: 'Evento' },
+    ];
+
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  FUNÇÕES UTILITÁRIAS                        ║
+     * ╚════════════════════════════════════════════╝
+     */
+
+    // Formata valor em reais
+    function formatBRL(value) {
+      if (value >= 1000) {
+        return 'R$ ' + (value / 1000).toFixed(1).replace('.0', '') + 'k';
+      }
+      return 'R$ ' + value.toLocaleString('pt-BR');
+    }
+
+    // Formata valor completo
+    function formatBRLFull(value) {
+      return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 0 });
+    }
+
+    // Gera cor de avatar a partir do nome
+    function avatarColor(name) {
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+    }
+
+    // Gera iniciais do nome
+    function initials(name) {
+      return name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    }
+
+    // Parseia o campo 'notes' para extrair métricas
+    // Formato esperado: "crescimento:XX|margem:YY|faturamento_base:ZZ"
+    function parseNotes(notes) {
+      const data = { crescimento: 0, margem: 0, faturamento_base: 0 };
+      if (!notes) return data;
+      const pairs = notes.split('|');
+      pairs.forEach(pair => {
+        const [key, val] = pair.split(':');
+        if (key && val && data.hasOwnProperty(key.trim())) {
+          data[key.trim()] = parseFloat(val) || 0;
+        }
+      });
+      return data;
+    }
+
+    // Determina a faixa do participante (pelo stage ou faturamento_base)
+    function determineFaixa(lead) {
+      const stage = (lead.stage || '').toLowerCase();
+      if (stage.includes('aceleração') || stage.includes('aceleracao')) return 'aceleracao';
+      if (stage.includes('decolagem')) return 'decolagem';
+
+      // Fallback: usa faturamento_base das notes
+      const notes = parseNotes(lead.notes);
+      if (notes.faturamento_base >= FAIXAS.aceleracao.min) return 'aceleracao';
+      return 'decolagem';
+    }
+
+    // Determina status do participante
+    function determineStatus(crescimento) {
+      if (crescimento >= 20) return { class: 'active', label: 'On Fire' };
+      if (crescimento >= 5) return { class: 'active', label: 'Ativo' };
+      if (crescimento >= 0) return { class: 'risk', label: 'Em risco' };
+      return { class: 'inactive', label: 'Parado' };
+    }
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  COUNTDOWN TIMER                            ║
+     * ╚════════════════════════════════════════════╝
+     */
+    function updateCountdown() {
+      const now = new Date();
+      const diff = SPRINT_END_DATE - now;
+
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-secs').textContent = '00';
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+      document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+      document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  RENDERIZAÇÃO DO RANKING                    ║
+     * ╚════════════════════════════════════════════╝
+     */
+    function renderTable(participants, containerId, faixa) {
+      const container = document.getElementById(containerId);
+
+      if (!participants || participants.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state__icon">🏁</div>
+            <p>Nenhum participante nesta faixa ainda.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Ordena por estimated_value (faturamento atual) decrescente
+      participants.sort((a, b) => (b.estimated_value || 0) - (a.estimated_value || 0));
+
+      let html = `
+        <table class="ranking-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Participante</th>
+              <th>Faturamento</th>
+              <th>Crescimento</th>
+              <th>Meta</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      participants.forEach((p, idx) => {
+        const pos = idx + 1;
+        const notes = parseNotes(p.notes);
+        const status = determineStatus(notes.crescimento);
+        const fat = p.estimated_value || 0;
+        const metaPct = faixa === 'aceleracao' ? Math.min((fat / META_ACELERACAO) * 100, 100) : Math.min((fat / 40000) * 100, 100);
+
+        // Row highlight class
+        let rowClass = 'ranking-row animate-in';
+        if (pos === 1) rowClass += ' ranking-row--gold';
+        else if (pos === 2) rowClass += ' ranking-row--silver';
+        else if (pos === 3) rowClass += ' ranking-row--bronze';
+
+        // Position badge
+        let posHTML;
+        if (pos === 1) posHTML = '<span class="pos-badge pos-badge--1">🥇</span>';
+        else if (pos === 2) posHTML = '<span class="pos-badge pos-badge--2">🥈</span>';
+        else if (pos === 3) posHTML = '<span class="pos-badge pos-badge--3">🥉</span>';
+        else posHTML = `<span class="pos-badge pos-badge--default">${pos}º</span>`;
+
+        // Badges
+        let badgesHTML = '';
+        const faixaBadgeClass = faixa === 'aceleracao' ? 'badge--aceleracao' : 'badge--decolagem';
+        const faixaLabel = faixa === 'aceleracao' ? 'Aceleração' : 'Decolagem';
+        badgesHTML += `<span class="badge ${faixaBadgeClass}">${faixaLabel}</span>`;
+        if (notes.margem >= 15) {
+          badgesHTML += '<span class="badge badge--margin">💎 Margem 15%+</span>';
+        }
+
+        // Growth pill
+        let growthClass = 'growth-pill--neutral';
+        let growthIcon = '→';
+        if (notes.crescimento > 0) { growthClass = 'growth-pill--positive'; growthIcon = '↑'; }
+        if (notes.crescimento < 0) { growthClass = 'growth-pill--negative'; growthIcon = '↓'; }
+
+        // Avatar color
+        const color = avatarColor(p.name);
+
+        html += `
+          <tr class="${rowClass}">
+            <td>${posHTML}</td>
+            <td>
+              <div class="name-cell">
+                <div class="name-cell__avatar" style="background:${color}20; color:${color}; border: 1px solid ${color}30;">
+                  ${initials(p.name)}
+                </div>
+                <div class="name-cell__info">
+                  <span class="name-cell__name">${p.name}</span>
+                  <div class="name-cell__badges">${badgesHTML}</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="fat-value">${formatBRLFull(fat)}</span></td>
+            <td class="growth-cell">
+              <span class="growth-pill ${growthClass}">${growthIcon} ${notes.crescimento}%</span>
+            </td>
+            <td class="meta-cell">
+              <div class="meta-bar"><div class="meta-bar__fill" style="width:${metaPct}%"></div></div>
+              <span class="meta-bar__label">${metaPct.toFixed(0)}% da meta</span>
+            </td>
+            <td>
+              <span class="status-dot status-dot--${status.class}">${status.label}</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  ATUALIZAÇÃO DE ESTATÍSTICAS               ║
+     * ╚════════════════════════════════════════════╝
+     */
+    function updateStats(allParticipants) {
+      const total = allParticipants.length;
+      const totalFat = allParticipants.reduce((sum, p) => sum + (p.estimated_value || 0), 0);
+      const growths = allParticipants.map(p => parseNotes(p.notes).crescimento);
+      const avgGrowth = total > 0 ? (growths.reduce((a, b) => a + b, 0) / total) : 0;
+      const marginCount = allParticipants.filter(p => parseNotes(p.notes).margem >= 15).length;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-fat').textContent = formatBRL(totalFat);
+      document.getElementById('stat-growth').textContent = avgGrowth.toFixed(1) + '%';
+      document.getElementById('stat-margin').textContent = marginCount;
+
+      // Update faixa counts
+      const aceleracaoCount = allParticipants.filter(p => determineFaixa(p) === 'aceleracao').length;
+      const decolagemCount = allParticipants.filter(p => determineFaixa(p) === 'decolagem').length;
+      document.getElementById('count-aceleracao').textContent = `${aceleracaoCount} participantes • 40k–80k`;
+      document.getElementById('count-decolagem').textContent = `${decolagemCount} participantes • 0–40k`;
+    }
+
+    /**
+     * ╔════════════════════════════════════════════╗
+     * ║  FETCH DA API + LÓGICA PRINCIPAL           ║
+     * ╚════════════════════════════════════════════╝
+     */
+    async function fetchAndRender() {
+      let leads = [];
+
+      try {
+        const response = await fetch(API_URL, {
+          headers: {
+            'Authorization': `Bearer ${API_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+        const data = await response.json();
+
+        // A API pode retornar { results: [...] } ou diretamente [...]
+        const rawLeads = Array.isArray(data) ? data : (data.results || data.data || []);
+
+        // Filtra por product = "Desafio" ou stage contendo "Desafio"
+        leads = rawLeads.filter(lead => {
+          const product = (lead.product || '').toLowerCase();
+          const stage = (lead.stage || '').toLowerCase();
+          return product.includes('desafio') || stage.includes('desafio');
+        });
+
+      } catch (err) {
+        console.warn('⚠️ Erro ao buscar API Base44:', err.message);
+        console.info('💡 Usando dados mockados para preview.');
+      }
+
+      // Se não há dados reais, usa mock
+      if (leads.length === 0 && USE_MOCK) {
+        leads = MOCK_DATA;
+        console.info('📊 Exibindo dados mockados. Configure a API para dados reais.');
+      }
+
+      // Separa por faixa
+      const aceleracao = leads.filter(l => determineFaixa(l) === 'aceleracao');
+      const decolagem = leads.filter(l => determineFaixa(l) === 'decolagem');
+
+      // Renderiza
+      renderTable(aceleracao, 'table-aceleracao', 'aceleracao');
+      renderTable(decolagem, 'table-decolagem', 'decolagem');
+      updateStats(leads);
+
+      // Timestamp
+      const now = new Date();
+      document.getElementById('last-update').textContent =
+        now.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+    }
+
+    // Primeira carga
+    fetchAndRender();
+
+    // Atualização automática
+    setInterval(fetchAndRender, REFRESH_INTERVAL);
+
+  </script>
+
+</body>
+</html>
