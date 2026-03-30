@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GÜM — Influencer Mining Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0A0A0B;color:#fafafa;min-height:100vh;padding:24px 16px}
+.container{max-width:960px;margin:0 auto}
+h1{font-size:clamp(20px,3vw,28px);font-weight:800;margin-bottom:4px}
+.sub{color:#a1a1aa;font-size:14px;margin-bottom:32px}
+.card{background:#111113;border:1px solid #27272a;border-radius:16px;padding:24px;margin-bottom:20px}
+.card-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a1a1aa;margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+label{display:block;font-size:13px;font-weight:600;color:#a1a1aa;margin-bottom:6px}
+input,textarea{width:100%;background:#1a1a1f;border:1px solid #27272a;border-radius:10px;padding:10px 14px;color:#fff;font-size:14px;font-family:inherit;outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:#8B5CF6}
+textarea{resize:vertical;min-height:80px}
+.range-row{display:flex;gap:12px;align-items:center}
+.range-row input{flex:1}
+.range-row span{color:#a1a1aa;font-size:13px;flex-shrink:0}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:50px;font-size:15px;font-weight:800;cursor:pointer;border:none;transition:.2s;letter-spacing:.3px}
+.btn-primary{background:linear-gradient(135deg,#6C3FC5,#8B5CF6);color:#fff;box-shadow:0 0 30px rgba(139,92,246,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 0 40px rgba(139,92,246,.5)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-secondary{background:rgba(255,255,255,.06);color:#fff;border:1px solid #27272a}
+.status-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:10px;font-size:13px;margin-top:16px;min-height:44px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot.idle{background:#71717a}
+.dot.running{background:#F59E0B;animation:pulse 1s ease-in-out infinite}
+.dot.done{background:#22C55E}
+.dot.error{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.results-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+.results-table th{text-align:left;padding:8px 12px;color:#a1a1aa;font-weight:600;border-bottom:1px solid #27272a;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.results-table td{padding:10px 12px;border-bottom:1px solid #1a1a1f;vertical-align:middle}
+.results-table tr:hover td{background:rgba(255,255,255,.02)}
+.tier-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.tier-nano{background:rgba(34,197,94,.15);color:#22C55E}
+.tier-micro{background:rgba(59,130,246,.15);color:#60a5fa}
+.tier-mid{background:rgba(245,158,11,.15);color:#F59E0B}
+.tier-macro{background:rgba(139,92,246,.15);color:#a78bfa}
+.empty{text-align:center;padding:40px;color:#71717a;font-size:14px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+@media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:#111113;border:1px solid #27272a;border-radius:12px;padding:16px;text-align:center}
+.stat-num{font-size:clamp(24px,3vw,36px);font-weight:900;line-height:1}
+.stat-lbl{font-size:11px;color:#a1a1aa;margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.filter-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.3);color:#a78bfa;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}
+.tag .rm{opacity:.6;font-size:10px}
+.tag:hover .rm{opacity:1}
+a{color:#a78bfa;text-decoration:none}
+a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>🔍 GÜM Influencer Mining Hub</h1>
+  <p class="sub">Configure os filtros, clique em Rodar Pesquisa e veja os resultados salvos automaticamente.</p>
+
+  <!-- Stats -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-total" style="color:#a78bfa">—</div><div class="stat-lbl">Total Salvos</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-nano" style="color:#22C55E">—</div><div class="stat-lbl">Nano-Micro</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-micro" style="color:#60a5fa">—</div><div class="stat-lbl">Micro</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-macro" style="color:#F59E0B">—</div><div class="stat-lbl">Mid+Macro</div></div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card">
+    <div class="card-title">⚙️ Filtros da Pesquisa</div>
+
+    <div class="form-grid">
+      <div>
+        <label>Hashtags (separadas por vírgula)</label>
+        <textarea id="f-hashtags" placeholder="gymargentina,fitnessmujer,gymmujer,entrenamientoargentina,fitover40,suplementacion">gymargentina,fitnessmujer,gymmujer,entrenamientoargentina,fitover40,suplementacion</textarea>
+        <div class="filter-tags" id="hashtag-preview"></div>
+      </div>
+      <div>
+        <label>Keywords na Bio (separadas por vírgula)</label>
+        <textarea id="f-keywords" placeholder="gym,fitness,entrenamiento,suplemento,nutricion">gym,fitness,entrenamiento,salud,bienestar,deporte,crossfit,nutricion,suplemento,musculacion</textarea>
+        <div class="filter-tags" id="keyword-preview"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label>Faixa de Seguidores</label>
+      <div class="range-row">
+        <input type="number" id="f-min" value="10000" placeholder="Min" min="1000">
+        <span>até</span>
+        <input type="number" id="f-max" value="500000" placeholder="Max" max="10000000">
+        <span>seguidores</span>
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-top:16px">
+      <div>
+        <label>Limite de resultados por run</label>
+        <input type="number" id="f-limite" value="50" min="10" max="200">
+      </div>
+      <div>
+        <label>Nicho / Contexto (opcional)</label>
+        <input type="text" id="f-nicho" placeholder="Ex: fitness feminino 35-54 Argentina" value="fitness feminino 35-54 Argentina">
+      </div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" id="btn-run" onclick="rodarPesquisa()">
+        <span id="btn-icon">🚀</span> <span id="btn-text">Rodar Pesquisa</span>
+      </button>
+      <button class="btn btn-secondary" onclick="carregarInfluenciadores()">🔄 Atualizar Lista</button>
+    </div>
+
+    <div class="status-bar" id="status-bar">
+      <div class="dot idle" id="status-dot"></div>
+      <span id="status-text">Aguardando — configure os filtros e clique em Rodar Pesquisa</span>
+    </div>
+  </div>
+
+  <!-- Lista de influenciadores -->
+  <div class="card">
+    <div class="card-title">👥 Influenciadores Encontrados</div>
+    <div id="results-container"><div class="empty">Carregando...</div></div>
+  </div>
+
+</div>
+
+<script>
+const BASE44_URL = 'https://app.base44.com/api/apps/69c4112708a34b24876e905d/entities/Influencer';
+const BASE44_KEY = '9b3a530aca184df78210b63e82afc5de';
+const N8N_WEBHOOK = 'https://n8n.srv876499.hstgr.cloud/webhook/gum-influencer-trigger';
+
+// Preview de tags
+function updatePreviews() {
+  ['hashtags','keywords'].forEach(type => {
+    const input = document.getElementById(`f-${type}`);
+    const preview = document.getElementById(`${type === 'hashtags' ? 'hashtag' : 'keyword'}-preview`);
+    if (!input || !preview) return;
+    const vals = input.value.split(',').map(v => v.trim()).filter(Boolean);
+    preview.innerHTML = vals.slice(0, 8).map(v => `<span class="tag">${type === 'hashtags' ? '#' : ''}${v}</span>`).join('') +
+      (vals.length > 8 ? `<span class="tag" style="opacity:.5">+${vals.length - 8}</span>` : '');
+  });
+}
+
+document.getElementById('f-hashtags').addEventListener('input', updatePreviews);
+document.getElementById('f-keywords').addEventListener('input', updatePreviews);
+updatePreviews();
+
+function setStatus(state, msg) {
+  const dot = document.getElementById('status-dot');
+  const text = document.getElementById('status-text');
+  dot.className = `dot ${state}`;
+  text.textContent = msg;
+}
+
+async function rodarPesquisa() {
+  const btn = document.getElementById('btn-run');
+  const icon = document.getElementById('btn-icon');
+  const btnText = document.getElementById('btn-text');
+
+  const hashtags = document.getElementById('f-hashtags').value.split(',').map(v => v.trim()).filter(Boolean);
+  const keywords = document.getElementById('f-keywords').value.split(',').map(v => v.trim()).filter(Boolean);
+  const min = parseInt(document.getElementById('f-min').value) || 10000;
+  const max = parseInt(document.getElementById('f-max').value) || 500000;
+  const limite = parseInt(document.getElementById('f-limite').value) || 50;
+  const nicho = document.getElementById('f-nicho').value;
+
+  if (hashtags.length === 0) { alert('Adicione pelo menos uma hashtag.'); return; }
+
+  btn.disabled = true;
+  icon.textContent = '⏳';
+  btnText.textContent = 'Iniciando...';
+  setStatus('running', '🔄 Enviando para o N8N... aguarda alguns segundos para o Apify processar (pode levar 2-3 min)');
+
+  try {
+    const resp = await fetch(N8N_WEBHOOK, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hashtags, keywords_bio: keywords, min_seguidores: min, max_seguidores: max, limite, nicho, origem: 'base44_hub', timestamp: new Date().toISOString() })
+    });
+
+    if (resp.ok) {
+      setStatus('running', '✅ Pesquisa iniciada! O N8N está scrapeando o Instagram. Em 2-3 minutos, clique em "Atualizar Lista" para ver os novos resultados.');
+      icon.textContent = '✅';
+      btnText.textContent = 'Pesquisa em andamento...';
+      // Auto-refresh após 3 min
+      setTimeout(() => {
+        carregarInfluenciadores();
+        setStatus('done', '✅ Pesquisa concluída! Lista atualizada.');
+        btn.disabled = false;
+        icon.textContent = '🚀';
+        btnText.textContent = 'Rodar Pesquisa';
+      }, 180000);
+    } else {
+      throw new Error('Resposta inválida do N8N');
+    }
+  } catch(e) {
+    setStatus('error', '❌ Erro ao conectar com o N8N: ' + e.message);
+    btn.disabled = false;
+    icon.textContent = '🚀';
+    btnText.textContent = 'Rodar Pesquisa';
+  }
+}
+
+async function carregarInfluenciadores() {
+  const container = document.getElementById('results-container');
+  try {
+    const resp = await fetch(BASE44_URL + '?limit=200', { headers: { 'api_key': BASE44_KEY, 'Content-Type': 'application/json' } });
+    const data = await resp.json();
+    const items = Array.isArray(data) ? data : (data.items || data.results || []);
+
+    // Stats
+    document.getElementById('stat-total').textContent = items.length;
+    document.getElementById('stat-nano').textContent = items.filter(i => (i.seguidores||0) < 50000).length;
+    document.getElementById('stat-micro').textContent = items.filter(i => (i.seguidores||0) >= 50000 && (i.seguidores||0) < 100000).length;
+    document.getElementById('stat-macro').textContent = items.filter(i => (i.seguidores||0) >= 100000).length;
+
+    if (items.length === 0) {
+      container.innerHTML = '<div class="empty">Nenhum influenciador encontrado ainda. Rode uma pesquisa!</div>';
+      return;
+    }
+
+    // Ordena por seguidores
+    items.sort((a,b) => (b.seguidores||0) - (a.seguidores||0));
+
+    function getTier(s) {
+      if (s < 50000) return {label:'Nano-Micro', cls:'tier-nano'};
+      if (s < 100000) return {label:'Micro', cls:'tier-micro'};
+      if (s < 250000) return {label:'Mid', cls:'tier-mid'};
+      return {label:'Macro', cls:'tier-macro'};
+    }
+
+    function getStatusColor(s) {
+      const map = { 'novo':'#a78bfa', 'contactado':'#F59E0B', 'aprovado':'#22C55E', 'recusado':'#ef4444', 'em_negociacao':'#60a5fa' };
+      return map[s] || '#71717a';
+    }
+
+    container.innerHTML = `
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Perfil</th>
+            <th>Seguidores</th>
+            <th>Tier</th>
+            <th>Status</th>
+            <th>Bio</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.map(i => {
+            const t = getTier(i.seguidores||0);
+            const sc = getStatusColor(i.status);
+            return `<tr>
+              <td><a href="${i.link_perfil||'#'}" target="_blank">@${i.username||i.nome_completo||'?'}</a></td>
+              <td style="font-weight:700">${Number(i.seguidores||0).toLocaleString('es-AR')}</td>
+              <td><span class="tier-badge ${t.cls}">${t.label}</span></td>
+              <td><span style="color:${sc};font-size:12px;font-weight:600">${i.status||'novo'}</span></td>
+              <td style="color:#a1a1aa;font-size:12px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(i.bio||'').substring(0,60)}</td>
+              <td style="color:#71717a;font-size:11px">${i.data_descoberta||''}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    container.innerHTML = `<div class="empty">Erro ao carregar: ${e.message}</div>`;
+  }
+}
+
+carregarInfluenciadores();
+</script>
+</body>
+</html>
